@@ -44,14 +44,33 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        NSLog(selectedPlace)
+        NSLog("Selected Place in Table" + selectedPlace)
         
-        if selectedPlace != "" {
+        let tappedAnyWhere: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.dismissOpenKeyboard))
+        view.addGestureRecognizer(tappedAnyWhere)
+        
+        if _segueIdentity == "goToPlace" {
+            pvPlaces.isHidden = false
+            lblDistance.isHidden = false
+            lblBearing.isHidden = false
+            
+            NSLog("Incoming Segue: " + _segueIdentity)
             let selectedPlaceObject: PlaceDescription = getPlaceDescriptionData(placeName: selectedPlace)
             setPlaceDescriptionData(placeObject: selectedPlaceObject)
         }
+        else if _segueIdentity == "addButtonSegue" {
+            pvPlaces.isHidden = true
+            lblDistance.isHidden = true
+            lblBearing.isHidden = true
+            
+            NSLog("Incoming Segue: " + _segueIdentity)
+        }
         
         // Do any additional setup after loading the view, typically from a nib.
+    }
+    
+    func dismissOpenKeyboard(){
+        self.view.endEditing(true)
     }
     
     @IBAction func clickedBtnRemove(_ sender: Any) {
@@ -59,20 +78,128 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     }
     
     @IBAction func clickedBtnSave(_ sender: Any) {
-        let newPlaceName: String = tfName.text!
-        let newPlaceDescription: String = tfDescription.text!
-        let newPlaceCategory: String = tfCategory.text!
-        let newPlaceAddressTitle: String = tfAddressTitle.text!
-        let newPlaceAddressStreet: String = tfAddressStreet.text!
-        let newPlaceElevation: Double = Double(tfElevation.text!)!
-        let newPlaceLatitude: Double = Double(tfLatitude.text!)!
-        let newPlaceLongitude: Double = Double(tfLongitude.text!)!
         
-        let newPlaceObject: PlaceDescription = PlaceDescription(name: newPlaceName, description: newPlaceDescription, category: newPlaceCategory, address_title: newPlaceAddressTitle, address_street: newPlaceAddressStreet, elevation: newPlaceElevation, latitude: newPlaceLatitude, longitude: newPlaceLongitude)
+        if validateTextFields() {
+            NSLog("ViewController: ClickedButtonSave:: Adding Place")
+            
+            let newPlaceName: String = tfName.text!
+            let newPlaceDescription: String = tfDescription.text!
+            let newPlaceCategory: String = tfCategory.text!
+            let newPlaceAddressTitle: String = tfAddressTitle.text!
+            let newPlaceAddressStreet: String = tfAddressStreet.text!
+            let newPlaceElevation: Double = Double(tfElevation.text!)!
+            let newPlaceLatitude: Double = Double(tfLatitude.text!)!
+            let newPlaceLongitude: Double = Double(tfLongitude.text!)!
+            
+            let newPlaceObject: PlaceDescription = PlaceDescription(name: newPlaceName, description: newPlaceDescription, category: newPlaceCategory, address_title: newPlaceAddressTitle, address_street: newPlaceAddressStreet, elevation: newPlaceElevation, latitude: newPlaceLatitude, longitude: newPlaceLongitude)
+            
+            _placeDictionary[newPlaceName] = newPlaceObject
+            
+            performSegue(withIdentifier: "gotoHomeScreen", sender: self)
+            
+        }
+        else {
+            NSLog("ViewController: ClickedButtonSave:: Missing Fields")
+        }
         
-        _placeDictionary[newPlaceName] = newPlaceObject
     }
     
+    func validateTextFields() -> Bool{
+        let redBorderColor: UIColor = UIColor.red
+        let greenBorderColor: UIColor = UIColor.green
+        
+        var isValidated = true
+        
+        if tfName.text == ""{
+            tfName.layer.borderWidth = 1.5
+            tfName.layer.borderColor = redBorderColor.cgColor
+            tfName.placeholder = "required"
+            isValidated = false
+        }
+        else {
+            tfName.layer.borderColor = greenBorderColor.cgColor
+            isValidated = true
+        }
+        
+        if tfDescription.text == ""{
+            tfDescription.layer.borderWidth = 1.5
+            tfDescription.layer.borderColor = redBorderColor.cgColor
+            tfDescription.placeholder = "required"
+            isValidated = false
+        }
+        else {
+            tfDescription.layer.borderColor = greenBorderColor.cgColor
+            isValidated = true
+        }
+        
+        if tfCategory.text == ""{
+            tfCategory.layer.borderWidth = 1.5
+            tfCategory.layer.borderColor = redBorderColor.cgColor
+            tfCategory.placeholder = "required"
+            isValidated = false
+        }
+        else {
+            tfCategory.layer.borderColor = greenBorderColor.cgColor
+            isValidated = true
+        }
+        
+        if tfAddressTitle.text == ""{
+            tfAddressTitle.layer.borderWidth = 1.5
+            tfAddressTitle.layer.borderColor = redBorderColor.cgColor
+            tfAddressTitle.placeholder = "required"
+            isValidated = false
+        }
+        else {
+            tfAddressTitle.layer.borderColor = greenBorderColor.cgColor
+            isValidated = true
+        }
+        
+        if tfAddressStreet.text == ""{
+            tfAddressStreet.layer.borderWidth = 1.5
+            tfAddressStreet.layer.borderColor = redBorderColor.cgColor
+            tfAddressStreet.placeholder = "required"
+            isValidated = false
+        }
+        else {
+            tfAddressStreet.layer.borderColor = greenBorderColor.cgColor
+            isValidated = true
+        }
+        
+        if tfElevation.text == ""{
+            tfElevation.layer.borderWidth = 1.5
+            tfElevation.layer.borderColor = redBorderColor.cgColor
+            tfElevation.placeholder = "required"
+            isValidated = false
+        }
+        else {
+            tfElevation.layer.borderColor = greenBorderColor.cgColor
+            isValidated = true
+        }
+        
+        if tfLatitude.text == ""{
+            tfLatitude.layer.borderWidth = 1.5
+            tfLatitude.layer.borderColor = redBorderColor.cgColor
+            tfLatitude.placeholder = "required"
+            isValidated = false
+        }
+        else {
+            tfLatitude.layer.borderColor = greenBorderColor.cgColor
+            isValidated = true
+        }
+        
+        if tfLongitude.text == ""{
+            tfLongitude.layer.borderWidth = 1.5
+            tfLongitude.layer.borderColor = redBorderColor.cgColor
+            tfLongitude.placeholder = "required"
+            isValidated = false
+        }
+        else {
+            tfLongitude.layer.borderColor = greenBorderColor.cgColor
+            isValidated = true
+        }
+        
+        return isValidated
+    }
     
     func getPlaceDescriptionData(placeName: String) -> PlaceDescription{
         return _placeDictionary[placeName]!
@@ -102,8 +229,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        NSLog(String(calculateInitialBearing(firstPlace: selectedPlace, secondPlace: _placeArray[row])))
-        NSLog(String(calculateGreatCircle(firstPlace: selectedPlace, secondPlace: _placeArray[row])))
+        NSLog("Place: " + selectedPlace + "Initial Bearing: " + String(calculateInitialBearing(firstPlace: selectedPlace, secondPlace: _placeArray[row])))
+        NSLog("Place: " + selectedPlace + "Great Circle:" + String(calculateGreatCircle(firstPlace: selectedPlace, secondPlace: _placeArray[row])))
         
         lblDistance.text = String("Distance: " + String(calculateGreatCircle(firstPlace: selectedPlace, secondPlace: _placeArray[row])))
         lblBearing.text = String("Initial Bearing: " + String(calculateInitialBearing(firstPlace: selectedPlace, secondPlace: _placeArray[row])))

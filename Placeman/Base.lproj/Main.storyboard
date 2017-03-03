@@ -22,7 +22,7 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qpD-tl-Xjw" id="lGt-6h-ffR">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" red="1" green="0.54556825339983861" blue="0.19873685989582945" alpha="1" colorSpace="calibratedRGB"/>
@@ -37,15 +37,10 @@
                         </connections>
                     </tableView>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" title="Home" id="hId-XO-Fls">
-                        <barButtonItem key="rightBarButtonItem" title="Add" id="WCH-2P-GON">
-                            <connections>
-                                <segue destination="BYZ-38-t0r" kind="show" id="TQn-99-ySP"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="Home" id="hId-XO-Fls"/>
                     <connections>
                         <outlet property="mainTableView" destination="fVF-8y-IQG" id="VDf-HC-QQa"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="addButtonSegue" id="Q6U-zS-XAh"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2ol-vQ-9Dt" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -248,6 +243,7 @@
                         <outlet property="tfLatitude" destination="Tmh-3C-kMX" id="56Q-oA-SAU"/>
                         <outlet property="tfLongitude" destination="dpG-eJ-mgT" id="ybT-wd-DE1"/>
                         <outlet property="tfName" destination="vH5-Yf-Dgm" id="Kq8-5O-avG"/>
+                        <segue destination="8ew-bP-tZj" kind="show" identifier="gotoHomeScreen" id="gOy-rV-DAQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -256,6 +252,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="TQn-99-ySP"/>
+        <segue reference="gOy-rV-DAQ"/>
+        <segue reference="Q6U-zS-XAh"/>
     </inferredMetricsTieBreakers>
 </document>

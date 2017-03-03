@@ -28,6 +28,8 @@ var _placeDictionary: [String: PlaceDescription] = placeLibraryObject.getPlaces(
 
 var _placeArray: [String] = []
 
+var _segueIdentity = ""
+
 class TableViewController: UITableViewController {
     
     @IBOutlet var mainTableView: UITableView!    
@@ -36,6 +38,12 @@ class TableViewController: UITableViewController {
         super.viewDidLoad()
         
         _placeArray = Array(_placeDictionary.keys)
+        
+        navigationItem.leftBarButtonItem = editButtonItem
+        
+        let plusButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector (TableViewController.addPlace))
+        navigationItem.rightBarButtonItem = plusButton
+        
         NSLog("TableViewController: viewDidLoad")
 
         // Uncomment the following line to preserve selection between presentations
@@ -43,6 +51,11 @@ class TableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    }
+    
+    func addPlace(){
+        _segueIdentity = "addButtonSegue"
+        performSegue(withIdentifier: "addButtonSegue", sender: self)
     }
 
     override func didReceiveMemoryWarning() {
@@ -66,6 +79,7 @@ class TableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
+            _placeDictionary.removeValue(forKey: _placeArray[indexPath.row])
             _placeArray.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
@@ -76,6 +90,7 @@ class TableViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if segue.identifier == "goToPlace" {
+            _segueIdentity = "goToPlace"
             let viewController:ViewController = segue.destination as! ViewController
             let indexPath = self.tableView.indexPathForSelectedRow!
             viewController.selectedPlace = _placeArray[indexPath.row]
@@ -83,6 +98,8 @@ class TableViewController: UITableViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        NSLog("TableViewController: viewDidAppear")
+        NSLog("Place Dictionary Keys: " + String(_placeDictionary.count))
         _placeArray = Array(_placeDictionary.keys)
         mainTableView.reloadData()
     }
