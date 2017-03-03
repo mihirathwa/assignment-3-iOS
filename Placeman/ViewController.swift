@@ -1,3 +1,19 @@
+// Copyright 2017 Mihir Rathwa,
+//
+// This license provides the instructor Dr. Tim Lindquist and Arizona
+// State University the right to build and evaluate the package for the
+// purpose of determining grade and program assessment.
+//
+// Purpose: This file contains the View Controller class as described
+// in Assignment 4, it displays the descriptions of Places with ability
+// edit fields and remove places
+//
+// Ser423 Mobile Applications
+// see http://pooh.poly.asu.edu/Mobile
+// @author Mihir Rathwa Mihir.Rathwa@asu.edu
+// Software Engineering, CIDSE, ASU Poly
+// @version February 3, 2017
+
 //
 //  ViewController.swift
 //  Placeman
@@ -8,44 +24,148 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
-//    @IBOutlet weak var name: UITextField!
-//    @IBOutlet weak var desc: UITextField!
-//    @IBOutlet weak var category: UITextField!
-//    @IBOutlet weak var address_title: UITextField!
-//    @IBOutlet weak var address_street: UITextField!
-//    @IBOutlet weak var elevation: UITextField!
-//    @IBOutlet weak var latitude: UITextField!
-//    @IBOutlet weak var longitude: UITextField!
+    @IBOutlet weak var tfName: UITextField!
+    @IBOutlet weak var tfDescription: UITextField!
+    @IBOutlet weak var tfCategory: UITextField!
+    @IBOutlet weak var tfAddressTitle: UITextField!
+    @IBOutlet weak var tfAddressStreet: UITextField!
+    @IBOutlet weak var tfElevation: UITextField!
+    @IBOutlet weak var tfLatitude: UITextField!
+    @IBOutlet weak var tfLongitude: UITextField!
     
+    @IBOutlet weak var pvPlaces: UIPickerView!
+    @IBOutlet weak var lblDistance: UILabel!
+    @IBOutlet weak var lblBearing: UILabel!
     
-    var selectedPlace = "unkmown"
+    var selectedPlace = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         NSLog(selectedPlace)
         
-        //setPlaceDescData()
-        //getPlaceDescData()
+        if selectedPlace != "" {
+            let selectedPlaceObject: PlaceDescription = getPlaceDescriptionData(placeName: selectedPlace)
+            setPlaceDescriptionData(placeObject: selectedPlaceObject)
+        }
+        
         // Do any additional setup after loading the view, typically from a nib.
     }
     
-//    func setPlaceDescData(placeDescObject: PlaceDescription) {
-//        name.text = placeDescObject.name
-//        desc.text = placeDescObject.description
-//        category.text = placeDescObject.category
-//        address_title.text = placeDescObject.address_title
-//        address_street.text = placeDescObject.address_street
-//        elevation.text = String(placeDescObject.elevation)
-//        latitude.text = String(placeDescObject.latitude)
-//        longitude.text = String(placeDescObject.longitude)
-//    }
+    @IBAction func clickedBtnRemove(_ sender: Any) {
+        _placeDictionary.removeValue(forKey: selectedPlace)
+    }
+    
+    @IBAction func clickedBtnSave(_ sender: Any) {
+        let newPlaceName: String = tfName.text!
+        let newPlaceDescription: String = tfDescription.text!
+        let newPlaceCategory: String = tfCategory.text!
+        let newPlaceAddressTitle: String = tfAddressTitle.text!
+        let newPlaceAddressStreet: String = tfAddressStreet.text!
+        let newPlaceElevation: Double = Double(tfElevation.text!)!
+        let newPlaceLatitude: Double = Double(tfLatitude.text!)!
+        let newPlaceLongitude: Double = Double(tfLongitude.text!)!
+        
+        let newPlaceObject: PlaceDescription = PlaceDescription(name: newPlaceName, description: newPlaceDescription, category: newPlaceCategory, address_title: newPlaceAddressTitle, address_street: newPlaceAddressStreet, elevation: newPlaceElevation, latitude: newPlaceLatitude, longitude: newPlaceLongitude)
+        
+        _placeDictionary[newPlaceName] = newPlaceObject
+    }
+    
+    
+    func getPlaceDescriptionData(placeName: String) -> PlaceDescription{
+        return _placeDictionary[placeName]!
+    }
+    
+    func setPlaceDescriptionData(placeObject: PlaceDescription){
+        tfName.text = placeObject.name
+        tfDescription.text = placeObject.description
+        tfCategory.text = placeObject.category
+        tfAddressTitle.text = placeObject.address_title
+        tfAddressStreet.text = placeObject.address_street
+        tfElevation.text = String(placeObject.elevation)
+        tfLatitude.text = String(placeObject.latitude)
+        tfLongitude.text = String(placeObject.longitude)
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return _placeArray.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return _placeArray[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        NSLog(String(calculateInitialBearing(firstPlace: selectedPlace, secondPlace: _placeArray[row])))
+        NSLog(String(calculateGreatCircle(firstPlace: selectedPlace, secondPlace: _placeArray[row])))
+        
+        lblDistance.text = String("Distance: " + String(calculateGreatCircle(firstPlace: selectedPlace, secondPlace: _placeArray[row])))
+        lblBearing.text = String("Initial Bearing: " + String(calculateInitialBearing(firstPlace: selectedPlace, secondPlace: _placeArray[row])))
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func calculateGreatCircle(firstPlace: String, secondPlace: String) -> Double{
+        var greatDistance: Double
+        let toRadians: Double = M_PI / 180
+        
+        let firstLatitude: Double = (_placeDictionary[firstPlace]?.latitude)!
+        let firstLongitude: Double = (_placeDictionary[firstPlace]?.longitude)!
+        
+        let secondLatitude: Double = (_placeDictionary[secondPlace]?.latitude)!
+        let secondLongitude: Double = (_placeDictionary[secondPlace]?.longitude)!
+        
+        let rValue: Double = 6371 * pow(10, 3)
+        
+        let phi1: Double = firstLatitude * toRadians
+        let phi2: Double = secondLatitude * toRadians
+        
+        let deltaPhi: Double = (secondLatitude - firstLatitude) * toRadians
+        let deltaLambda: Double = (secondLongitude - firstLongitude) * toRadians
+        
+        let aValue: Double = sin(deltaPhi / 2) * sin(deltaPhi / 2) + cos(phi1) * cos(phi2) * sin(deltaLambda / 2) * sin(deltaLambda / 2)
+        
+        let cValue: Double = 2 * atan2(sqrt(aValue), sqrt(1-aValue))
+        
+        greatDistance = rValue * cValue
+        
+        return greatDistance
+    }
+    
+    func calculateInitialBearing(firstPlace: String, secondPlace: String) -> Double{
+        var bearing: Double
+        
+        let firstLatitude: Double = (_placeDictionary[firstPlace]?.latitude)!
+        let firstLongitude: Double = (_placeDictionary[firstPlace]?.longitude)!
+        
+        let secondLatitude: Double = (_placeDictionary[secondPlace]?.latitude)!
+        let secondLongitude: Double = (_placeDictionary[secondPlace]?.longitude)!
+        
+        let toRadians: Double = M_PI / 180
+        
+        let phi1: Double = firstLatitude * toRadians
+        let lambda1: Double = firstLongitude * toRadians
+        
+        let phi2: Double = secondLatitude * toRadians
+        let lambda2: Double = secondLongitude * toRadians
+        
+        let yValue: Double = sin(lambda2 - lambda1) * cos(phi2)
+        let xValue: Double = cos(phi1) * sin(phi2) - sin(phi1) * cos(phi2) * cos(lambda2 - lambda1)
+        
+        let aTan2Value: Double = atan2(yValue, xValue)
+        
+        bearing = aTan2Value * ( 180 / M_PI )
+        
+        return bearing
     }
 
 

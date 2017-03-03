@@ -1,3 +1,17 @@
+// Copyright 2017 Mihir Rathwa,
+//
+// This license provides the instructor Dr. Tim Lindquist and Arizona
+// State University the right to build and evaluate the package for the
+// purpose of determining grade and program assessment.
+//
+// Purpose: This file contains the TableView Controller class as described
+// in Assignment 4, it displays the list of Places from JSON and updates on edits
+//
+// Ser423 Mobile Applications
+// see http://pooh.poly.asu.edu/Mobile
+// @author Mihir Rathwa Mihir.Rathwa@asu.edu
+// Software Engineering, CIDSE, ASU Poly
+// @version February 3, 2017
 //
 //  TableViewController.swift
 //  Placeman
@@ -8,19 +22,22 @@
 
 import UIKit
 
-var _placeDictionary: [String: PlaceDescription] = [:]
+let placeLibraryObject = PlaceLibrary()
+
+var _placeDictionary: [String: PlaceDescription] = placeLibraryObject.getPlaces()//[:]
 
 var _placeArray: [String] = []
 
-let placeLibraryObject = PlaceLibrary()
-
 class TableViewController: UITableViewController {
+    
+    @IBOutlet var mainTableView: UITableView!    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        _placeDictionary = placeLibraryObject.getPlaces()
+        //_placeDictionary = placeLibraryObject.getPlaces()
         _placeArray = Array(_placeDictionary.keys)
+        NSLog("TableViewController: viewDidLoad")
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -102,5 +119,12 @@ class TableViewController: UITableViewController {
             viewController.selectedPlace = _placeArray[indexPath.row]
         }
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        _placeArray = Array(_placeDictionary.keys)
+        mainTableView.reloadData()
+    }
+    
+    
 
 }
